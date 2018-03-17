@@ -30,12 +30,12 @@ Rocket.prototype.update = function (count, halt) {
       this.pos.add(this.vel);
       this.acc.mult(0);
       this.updateFitness(count);
-      this.updateCrash();
+      this.checkCollision();
   }
   return this.fitness;
 }
 
-Rocket.prototype.updateCrash = function () {
+Rocket.prototype.checkCollision = function () {
   // check walls
   this.crashed = this.crashed || this.pos.x < 0 || this.pos.x > width;
   this.crashed = this.crashed || this.pos.y < 0 || this.pos.y > height;
@@ -60,7 +60,7 @@ Rocket.prototype.draw = function (c) {
   translate(this.pos.x, this.pos.y);
   fill(c);
   push();
-  rotate(this.vel.heading());
+  rotate(this.vel.heading()+PI/2);
   // rect(0, 0, 39, 5);
   // triangle(
   //   5, 0,  // right
@@ -68,12 +68,12 @@ Rocket.prototype.draw = function (c) {
   //   0, -20  // top
   // )
   triangle(
-    20, 0, // right
-    0, -5, // left
-    0, +5  // top
+    0, -20, // top
+    -5, 0, // left
+    +5, 0  // right
   );
   pop();
-
+  ellipse(0, 0, 10);
 
   // fill(0, 255, 0);
   // text(nfc(this.fitness,3), 0,0);
@@ -81,7 +81,7 @@ Rocket.prototype.draw = function (c) {
   pop();
   for (var i = 1; i < this.poslist.length; i++) {
     if (this.crashed) {
-      stroke(100,100,100);
+      stroke(100);
     } else {
       stroke(c);
     }
