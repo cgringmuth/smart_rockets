@@ -1,10 +1,10 @@
-# smart_rockets
+# Smart rockets
 The idea is to model an evolutionary process which, given a population of rockets, finds the best way to a target. Each rocket incorporate a sequence of forces which will be applied each step. The force sequence is the DNA (which it self contains genes) of each rocket. At the beginning a collection of rockets are spawned. The DNA is generated completely random. Each population has a number of iteration (lifespan) after all rockets "die" and based on an evolution process new "child" rockets will be generated.
 
 The generation is very similar to an evolutionary process:
 - Select 2 parents
 - Create child from the parents
-- Mutated genes based on specified mutation rate
+- Mutate genes based on specified mutation rate
 
 ## Selecting 2 parents
 From the current population 2 parents will be selected to create a new rocket. For the selection process we need some kind of fitness. The fitness is determined based on how far each rocket is after the end of each iteration and how long did it take for a rocket to hit the target, if it actually hit it. This fitness is recomputed to a probability. The probability defines how likely it is that a rocket is chosen to be a parent. Thus the rocket with the highest fitness is more likely to be chosen as a parent.
