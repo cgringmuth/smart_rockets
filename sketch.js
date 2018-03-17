@@ -10,10 +10,12 @@ var target;
 var start;
 var halt;
 var mutateRate = 0.0001;
-var countP;
+var lifespanP;
 var bestFitnessP;
 var bestFitness;
 var meanFitnessP;
+var iteration = 1;
+var iterationP;
 
 function setup() {
   createCanvas(800, 600);
@@ -23,7 +25,8 @@ function setup() {
   start = createVector(width/2,height-30);
   population = new Population();
   halt = false;
-  countP = createP();
+  lifespanP = createP();
+  iterationP = createP();
   bestFitnessP = createP();
   meanFitnessP = createP();
   meanFitnessP.html("mean fitness: ");
@@ -31,14 +34,16 @@ function setup() {
 
 function draw() {
   background(51);
-  population.run();
   noStroke();
+  fill(255);
   ellipse(target.x, target.y, 15);
+  population.run();
   if (!halt) {
       count++;
   }
-  countP.html("count: "+str(count));
+  lifespanP.html("life span: "+str(lifespan-count));
   bestFitnessP.html("best fitness: "+str(bestFitness));
+  iterationP.html("iteration: "+str(iteration));
 }
 
 function keyPressed() {
@@ -77,8 +82,9 @@ Population.prototype.meanFitness = function () {
 
 Population.prototype.run = function () {
   if (count >= lifespan || !this.alive()) {
+    iteration++;
     count = 0;
-    meanFitnessP.html("mean fitness:" + str(this.meanFitness()));
+    meanFitnessP.html("mean fitness: " + str(this.meanFitness()));
     this.create();
   }
 

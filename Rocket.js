@@ -75,8 +75,8 @@ Rocket.prototype.draw = function (c) {
   pop();
 
 
-  fill(0, 255, 0);
-  text(nfc(this.fitness,3), 0,0);
+  // fill(0, 255, 0);
+  // text(nfc(this.fitness,3), 0,0);
 
   pop();
   for (var i = 1; i < this.poslist.length; i++) {
