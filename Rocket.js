@@ -1,5 +1,7 @@
-function Rocket(lifespan, target, genes) {
-  this.pos = createVector(width/2,height-10);
+function Rocket(lifespan, start, target, genes) {
+  this.start = start;
+  this.pos = start.copy();
+  this.poslist = [];
   this.vel = createVector();
   this.acc = createVector();
   if (genes) {
@@ -9,31 +11,54 @@ function Rocket(lifespan, target, genes) {
   }
   this.maxSpeed = 5;
   this.target = target;
-  this.curFitness = 0;
+  this.fitness = 0;
   this.prob = 0;
+  this.targetReachedCount = -1;
+  this.crashed = false;
+}
+
+Rocket.prototype.alive = function () {
+  return !this.crashed && this.targetReachedCount < 0;
 }
 
 Rocket.prototype.update = function (count, halt) {
-  if (!halt) {
+  if (!halt && this.alive()) {
       this.applyForce(this.dna.genes[count]);
       this.vel.add(this.acc);
       this.vel.limit(this.maxSpeed);
+      this.poslist.push(this.pos.copy());
       this.pos.add(this.vel);
       this.acc.mult(0);
-      this.updateFitness();
+      this.updateFitness(count);
+      this.updateCrash();
   }
-  // console.log(this.pos);
+  return this.fitness;
 }
 
-Rocket.prototype.updateFitness = function () {
-  this.curFitness = 1/dist(this.pos.x, this.pos.y, this.target.x, this.target.y) * 100;
+Rocket.prototype.updateCrash = function () {
+  // check walls
+  this.crashed = this.crashed || this.pos.x < 0 || this.pos.x > width;
+  this.crashed = this.crashed || this.pos.y < 0 || this.pos.y > height;
 }
 
-Rocket.prototype.draw = function () {
+Rocket.prototype.updateFitness = function (count) {
+  var d = dist(this.pos.x, this.pos.y, this.target.x, this.target.y);
+  this.fitness = 1/d * 100;
+
+  if (d < 5) {
+      this.targetReachedCount = count;
+      this.fitness += (1/this.targetReachedCount) * 100;  // bump up fitness based time to reach
+  }
+}
+
+Rocket.prototype.draw = function (c) {
+  if (!c) {
+    c = color(255);
+  }
   push();
   noStroke();
   translate(this.pos.x, this.pos.y);
-
+  fill(c);
   push();
   rotate(this.vel.heading());
   // rect(0, 0, 39, 5);
@@ -51,9 +76,20 @@ Rocket.prototype.draw = function () {
 
 
   fill(0, 255, 0);
-  text(nfc(this.curFitness,3), 0,0);
+  text(nfc(this.fitness,3), 0,0);
 
   pop();
+  for (var i = 1; i < this.poslist.length; i++) {
+    if (this.crashed) {
+      stroke(100,100,100);
+    } else {
+      stroke(c);
+    }
+
+    var p1 = this.poslist[i-1];
+    var p2 = this.poslist[i];
+    line(p1.x, p1.y, p2.x, p2.y);
+  }
 }
 
 Rocket.prototype.applyForce = function (f) {
@@ -83,7 +119,7 @@ Rocket.prototype.crossover = function (other) {
   }
 
 
-  return new Rocket(this.lifespan, this.target, newGenes);
+  return new Rocket(this.lifespan, this.start, this.target, newGenes);
 }
 
 Rocket.prototype.mutate = function (mutateRate) {
@@ -97,7 +133,7 @@ Rocket.prototype.mutate = function (mutateRate) {
 
 function randomForce(limit) {
   if (!limit) {
-    limit = 0.1;
+    limit = 0.3;
   }
   force = p5.Vector.random2D();
   force.limit(limit);
