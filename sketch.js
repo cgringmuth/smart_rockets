@@ -1,7 +1,7 @@
 function preload() {
 
 }
-
+p5.disableFriendlyErrors = true;
 var population;
 var lifespan = 500;
 var count = 0;
