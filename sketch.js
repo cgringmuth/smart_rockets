@@ -17,6 +17,11 @@ var meanFitnessP;
 var iteration = 1;
 var iterationP;
 
+function mouseClicked() {
+  target = createVector(mouseX, mouseY);
+  population.updaTarget(target);
+}
+
 function setup() {
   createCanvas(800, 600);
   background(51);
@@ -58,6 +63,13 @@ function Population() {
   for (var i=0; i<popCount; ++i) {
     this.rockets.push(new Rocket(lifespan, start, target));
   }
+}
+
+
+Population.prototype.updaTarget = function (target) {
+  this.rockets.forEach(function (rocket) {
+    rocket.updateTarget(target);
+  });
 }
 
 Population.prototype.alive = function () {

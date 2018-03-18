@@ -35,6 +35,10 @@ Rocket.prototype.update = function (count, halt) {
   return this.fitness;
 }
 
+Rocket.prototype.updateTarget = function (target) {
+  this.target = target;
+}
+
 Rocket.prototype.checkCollision = function () {
   // check walls
   this.crashed = this.crashed || this.pos.x < 0 || this.pos.x > width;
